@@ -15,30 +15,24 @@ const barBusquedaTrigger = document.getElementById("bar-busqueda-trigger");
 const txtLocationBar = document.getElementById("txt-location-bar");
 const txtGuestsBar = document.getElementById("txt-guests-bar");
 
-
 const modalBusqueda = document.getElementById("modal-busqueda");
 const modalOverlay = document.getElementById("modal-overlay");
-
 
 const btnInputLocation = document.getElementById("btn-input-location");
 const btnInputGuests = document.getElementById("btn-input-guests");
 const inputLocation = document.getElementById("input-location");
 const txtGuestsCount = document.getElementById("txt-guests-count");
 
-
 const panelLocation = document.getElementById("panel-location");
 const panelGuests = document.getElementById("panel-guests");
-
 
 const btnAdultsMinus = document.getElementById("btn-adults-minus");
 const btnAdultsPlus = document.getElementById("btn-adults-plus");
 const lblAdults = document.getElementById("lbl-adults");
 
-
 const btnKidsMinus = document.getElementById("btn-kids-minus");
 const btnKidsPlus = document.getElementById("btn-kids-plus");
 const lblKids = document.getElementById("lbl-kids");
-
 
 const btnSearchSubmit = document.getElementById("btn-search-submit");
 
@@ -50,7 +44,7 @@ let ninos = 0;
 const ciudadesDisponibles = [...new Set(stays.map(estancia => estancia.city))];
 
 // Renderiza las tarjetas de estancias en el grid principal 
-export function renderizarEstancias(listaEstancias) {
+function renderizarEstancias(listaEstancias) {
     gridStays.innerHTML = "";
     contadorStays.textContent = `${listaEstancias.length} stays`;
 
@@ -108,7 +102,7 @@ function renderizarListaCiudades(filtroTexto = "") {
 
     ciudadesFiltradas.forEach(ciudad => {
         const botonCiudad = document.createElement("button");
-        botonCiudad.className = "option-city flex items-center gap-3 text-[#4f4f4f] hover:text-[#333333] font-medium transition-colors text-left w-full";
+        botonCiudad.className = "option-city flex items-center gap-3 text-[#4f4f4f] hover:text-[#d64b4b] font-medium transition-colors text-left w-full";
         botonCiudad.setAttribute("data-city", ciudad);
         botonCiudad.innerHTML = `
             <svg class="w-4 h-5 text-gray-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -254,7 +248,7 @@ function aplicarFiltros() {
     renderizarEstancias(alojamientosFiltrados);
 }
 
-// Ejecuta la búsqueda final y cierra el modal
+// Ejecuta la busqueda final y cierra el modal
 function ejecutarBusqueda() {
     aplicarFiltros();
     cerrarModal();
