@@ -7,6 +7,7 @@ import {
     formatearTextoUbicacion
 } from './utils.js';
 
+// Referecias a elementos principales del DOM
 const gridStays = document.getElementById("grid-stays");
 const contadorStays = document.getElementById("contador-stays");
 const tituloStays = document.getElementById("titulo-stays");
@@ -41,12 +42,14 @@ const lblKids = document.getElementById("lbl-kids");
 
 const btnSearchSubmit = document.getElementById("btn-search-submit");
 
+// Estado actual de los filtros seleccionados
 let ciudadSeleccionada = "";
 let adultos = 0;
 let ninos = 0;
 
 const ciudadesDisponibles = [...new Set(stays.map(estancia => estancia.city))];
 
+// Renderiza las tarjetas de estancias en el grid principal 
 export function renderizarEstancias(listaEstancias) {
     gridStays.innerHTML = "";
     contadorStays.textContent = `${listaEstancias.length} stays`;
@@ -95,6 +98,7 @@ export function renderizarEstancias(listaEstancias) {
     });
 }
 
+// Renderiza las ciudades disponibles segun el texto escrito
 function renderizarListaCiudades(filtroTexto = "") {
     panelLocation.innerHTML = "";
 
@@ -107,7 +111,11 @@ function renderizarListaCiudades(filtroTexto = "") {
         botonCiudad.className = "option-city flex items-center gap-3 text-[#4f4f4f] hover:text-[#333333] font-medium transition-colors text-left w-full";
         botonCiudad.setAttribute("data-city", ciudad);
         botonCiudad.innerHTML = `
-            <span class="text-gray-400 text-lg leading-none">📍</span>
+            <svg class="w-4 h-5 text-gray-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd"
+                d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                clip-rule="evenodd" />
+            </svg>
             <span>${ciudad}, Finland</span>
         `;
 
@@ -121,6 +129,7 @@ function renderizarListaCiudades(filtroTexto = "") {
     });
 }
 
+// Controla la apertura y cierre del modal de busqueda
 function abrirModal() {
     modalBusqueda.classList.remove("invisible", "opacity-0");
     modalBusqueda.classList.add("visible", "opacity-100");
@@ -131,17 +140,34 @@ function cerrarModal() {
     modalBusqueda.classList.add("invisible", "opacity-0");
 }
 
-btnInputLocation.addEventListener("click", () => {
-    panelLocation.classList.remove("hidden");
-    panelGuests.classList.add("hidden");
-});
+// Cambia entre el panel de ubicacion y el panel de huespedes
+function activarFiltroLocation() {
+    btnInputLocation.classList.add("border", "border-[#333333]", "rounded-2xl");
+    btnInputGuests.classList.remove("border", "border-[#333333]", "rounded-2xl");
 
-btnInputGuests.addEventListener("click", () => {
+    panelLocation.classList.remove("hidden");
+    panelLocation.classList.add("flex");
+
+    panelGuests.classList.add("hidden");
+    panelGuests.classList.remove("flex");
+}
+
+function activarFiltroGuests() {
+    btnInputGuests.classList.add("border", "border-[#333333]", "rounded-2xl");
+    btnInputLocation.classList.remove("border", "border-[#333333]", "rounded-2xl");
+
     panelGuests.classList.remove("hidden");
     panelGuests.classList.add("flex");
-    panelLocation.classList.add("hidden");
-});
 
+    panelLocation.classList.add("hidden");
+    panelLocation.classList.remove("flex");
+}
+
+btnInputLocation.addEventListener("click", activarFiltroLocation);
+
+btnInputGuests.addEventListener("click", activarFiltroGuests);
+
+// Actualiza el contador visual de huespedes y aplica el filtro
 function actualizarTextosHuespedes() {
     const total = obtenerTotalHuespedes(adultos, ninos);
 
@@ -186,6 +212,7 @@ btnKidsMinus.addEventListener("click", () => {
     }
 });
 
+// Filtra ciudades mientras el usuario escribe en el input de ubicacion
 inputLocation.addEventListener("input", (e) => {
     const textoEscrito = e.target.value.trim();
     const ciudadNormalizada = textoEscrito.replace(/,\s*finland/i, "").trim();
@@ -200,11 +227,9 @@ inputLocation.addEventListener("input", (e) => {
     aplicarFiltros();
 });
 
-inputLocation.addEventListener("focus", () => {
-    panelLocation.classList.remove("hidden");
-    panelGuests.classList.add("hidden");
-});
+inputLocation.addEventListener("focus", activarFiltroLocation);
 
+// Aplica los filtros actuales y actualiza el listado de estancias
 function aplicarFiltros() {
     const totalHuespedes = obtenerTotalHuespedes(adultos, ninos);
     const alojamientosFiltrados = filtrarEstancias(stays, ciudadSeleccionada, totalHuespedes);
@@ -229,14 +254,17 @@ function aplicarFiltros() {
     renderizarEstancias(alojamientosFiltrados);
 }
 
+// Ejecuta la búsqueda final y cierra el modal
 function ejecutarBusqueda() {
     aplicarFiltros();
     cerrarModal();
 }
 
+// Eventos principales de interaccion
 barBusquedaTrigger.addEventListener("click", abrirModal);
 modalOverlay.addEventListener("click", cerrarModal);
 btnSearchSubmit.addEventListener("click", ejecutarBusqueda);
 
+// Render inicial de la aplicacion.
 aplicarFiltros();
 renderizarListaCiudades();
