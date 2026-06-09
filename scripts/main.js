@@ -1,5 +1,12 @@
 import { stays } from './stays.js';
 
+import {
+    obtenerTotalHuespedes,
+    filtrarEstancias,
+    formatearTextoHuespedes,
+    formatearTextoUbicacion
+} from './utils.js';
+
 const gridStays = document.getElementById("grid-stays");
 const contadorStays = document.getElementById("contador-stays");
 const tituloStays = document.getElementById("titulo-stays");
@@ -109,6 +116,7 @@ function renderizarListaCiudades(filtroTexto = "") {
         botonCiudad.addEventListener("click", () => {
             ciudadSeleccionada = ciudad;
             inputLocation.value = `${ciudad}, Finland`;
+            aplicarFiltros();
         });
 
         panelLocation.appendChild(botonCiudad);
@@ -137,16 +145,19 @@ btnInputGuests.addEventListener("click", () => {
 });
 
 function actualizarTextosHuespedes() {
-    const total = adultos + ninos;
+    const total = obtenerTotalHuespedes(adultos, ninos);
+
+    txtGuestsCount.textContent = formatearTextoHuespedes(total);
+
     if (total === 0) {
-        txtGuestsCount.textContent = "Add guests";
         txtGuestsCount.classList.add("text-gray-400");
         txtGuestsCount.classList.remove("text-[#333333]");
     } else {
-        txtGuestsCount.textContent = `${total} guests`;
         txtGuestsCount.classList.remove("text-gray-400");
         txtGuestsCount.classList.add("text-[#333333]");
     }
+
+    aplicarFiltros();
 }
 
 btnAdultsPlus.addEventListener("click", () => {
@@ -179,12 +190,14 @@ btnKidsMinus.addEventListener("click", () => {
 
 inputLocation.addEventListener("input", (e) => {
     const textoEscrito = e.target.value.trim();
+    const ciudadEncontrada = ciudadesDisponibles.find(ciudad =>
+        ciudad.toLowerCase() === textoEscrito.replace(", finland", "").toLowerCase()
+    );
 
-    if (textoEscrito === "") {
-        ciudadSeleccionada = "";
-    }
+    ciudadSeleccionada = ciudadEncontrada || "";
 
     renderizarListaCiudades(textoEscrito);
+    aplicarFiltros();
 });
 
 inputLocation.addEventListener("focus", () => {
@@ -192,36 +205,32 @@ inputLocation.addEventListener("focus", () => {
     panelGuests.classList.add("hidden");
 });
 
-function ejecutarBusqueda() {
-    const totalHuespedesRequeridos = adultos + ninos;
-
-    const alojamientosFiltrados = stays.filter(estancia => {
-        const cumpleCiudad = ciudadSeleccionada === "" || estancia.city.toLowerCase() === ciudadSeleccionada.toLowerCase();
-
-        const cumpleHuespedes = estancia.maxGuests >= totalHuespedesRequeridos;
-
-        return cumpleCiudad && cumpleHuespedes;
-    });
+function aplicarFiltros() {
+    const totalHuespedes = obtenerTotalHuespedes(adultos, ninos);
+    const alojamientosFiltrados = filtrarEstancias(stays, ciudadSeleccionada, totalHuespedes);
 
     if (ciudadSeleccionada) {
         tituloStays.textContent = `Stays in ${ciudadSeleccionada}, Finland`;
-        txtLocationBar.textContent = `${ciudadSeleccionada}, Finland`;
         txtLocationBar.classList.add("text-[#333333]");
     } else {
         tituloStays.textContent = "Stays in Finland";
-        txtLocationBar.textContent = "Add location";
         txtLocationBar.classList.remove("text-[#333333]");
     }
 
-    if (totalHuespedesRequeridos > 0) {
-        txtGuestsBar.textContent = `${totalHuespedesRequeridos} guests`;
+    txtLocationBar.textContent = formatearTextoUbicacion(ciudadSeleccionada);
+    txtGuestsBar.textContent = formatearTextoHuespedes(totalHuespedes);
+
+    if (totalHuespedes > 0) {
         txtGuestsBar.classList.add("text-[#333333]");
     } else {
-        txtGuestsBar.textContent = "Add guests";
         txtGuestsBar.classList.remove("text-[#333333]");
     }
 
     renderizarEstancias(alojamientosFiltrados);
+}
+
+function ejecutarBusqueda() {
+    aplicarFiltros();
     cerrarModal();
 }
 
@@ -229,5 +238,5 @@ barBusquedaTrigger.addEventListener("click", abrirModal);
 modalOverlay.addEventListener("click", cerrarModal);
 btnSearchSubmit.addEventListener("click", ejecutarBusqueda);
 
-renderizarEstancias(stays);
+aplicarFiltros();
 renderizarListaCiudades();
