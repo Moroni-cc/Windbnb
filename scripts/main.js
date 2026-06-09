@@ -107,9 +107,7 @@ function renderizarListaCiudades(filtroTexto = "") {
         botonCiudad.className = "option-city flex items-center gap-3 text-[#4f4f4f] hover:text-[#333333] font-medium transition-colors text-left w-full";
         botonCiudad.setAttribute("data-city", ciudad);
         botonCiudad.innerHTML = `
-            <svg class="w-4 h-5 text-gray-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
-            </svg>
+            <span class="text-gray-400 text-lg leading-none">📍</span>
             <span>${ciudad}, Finland</span>
         `;
 
