@@ -188,8 +188,10 @@ btnKidsMinus.addEventListener("click", () => {
 
 inputLocation.addEventListener("input", (e) => {
     const textoEscrito = e.target.value.trim();
+    const ciudadNormalizada = textoEscrito.replace(/,\s*finland/i, "").trim();
+
     const ciudadEncontrada = ciudadesDisponibles.find(ciudad =>
-        ciudad.toLowerCase() === textoEscrito.replace(", finland", "").toLowerCase()
+        ciudad.toLowerCase() === ciudadNormalizada.toLowerCase()
     );
 
     ciudadSeleccionada = ciudadEncontrada || "";
